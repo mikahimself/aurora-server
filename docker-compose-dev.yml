@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  aurora-server:
+    build: .
+    command: >
+      sh -c "
+        bun prisma db push &&
+        bun run prisma/seed.ts &&
+        bun run dev
+      "
+    ports:
+      - "3456:3456"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
